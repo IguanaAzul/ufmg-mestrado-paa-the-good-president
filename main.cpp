@@ -1,42 +1,43 @@
 #include <iostream>
 #include <vector>
+#include <list>
+#include <bitset>
 
-using namespace std;
-const int INF = INT32_MAX;
+const long long INF = INT32_MAX;
 
-void dfs(int node, const vector<vector<int>>& graph, vector<bool>& visited) {
-    visited[node] = true;
-    for (int neighbor = 0; neighbor < graph.size(); ++neighbor) {
-        if (graph[node][neighbor] != INF && !visited[neighbor]) {
+void dfs(long long node, const std::vector<std::list<long long>>& graph, std::bitset<100000>& visited) {
+    visited.set(node);
+    for (long long neighbor : graph[node]) {
+        if (!visited[neighbor]) {
             dfs(neighbor, graph, visited);
         }
     }
 }
 
 int main() {
-    int T, n_cities, n_roads, cost_library, cost_road;
-    cin >> T;
-    while (cin >> n_cities >> n_roads >> cost_library >> cost_road) {
-        vector<vector<int>> graph_matrix(n_cities, vector<int>(n_cities, INF));
-        for (int i = 0; i < n_roads; i++) {
-            int origin, destination;
-            cin >> origin >> destination;
-            graph_matrix[origin - 1][destination - 1] = 1;
-            graph_matrix[destination - 1][origin - 1] = 1;
+    long long T, n_cities, n_roads, cost_library, cost_road;
+    std::cin >> T;
+    while (std::cin >> n_cities >> n_roads >> cost_library >> cost_road) {
+        std::vector<std::list<long long>> graph(n_cities, std::list<long long>());
+        for (long long i = 0; i < n_roads; i++) {
+            long long origin, destination;
+            std::cin >> origin >> destination;
+            graph[origin - 1].push_back(destination - 1);
+            graph[destination - 1].push_back(origin - 1);
         }
-        vector<bool> visited(n_cities, false);
-        int build_libraries = 0;
-        for (int i = 0; i < n_cities; ++i) {
+        std::bitset<100000> visited;
+        long long build_libraries = 0;
+        for (long long i = 0; i < n_cities; ++i) {
             if (!visited[i]) {
-                dfs(i, graph_matrix, visited);
+                dfs(i, graph, visited);
                 build_libraries++;
             }
         }
 
         if (cost_library < cost_road) {
-            cout << cost_library * n_cities << endl;
+            std::cout << cost_library * n_cities << std::endl;
         } else {
-            cout << cost_library * build_libraries + cost_road * (n_cities - build_libraries) << endl;
+            std::cout << cost_library * build_libraries + cost_road * (n_cities - build_libraries) << std::endl;
         }
     }
     return 0;
